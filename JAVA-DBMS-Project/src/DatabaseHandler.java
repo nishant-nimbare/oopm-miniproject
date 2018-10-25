@@ -68,8 +68,8 @@ public class DatabaseHandler {
             {
                 JOptionPane.showMessageDialog(null,"logged in successfull");
                 frame.dispose();
-                homepage s=new homepage();
-                s.setUser(username);
+                homepage s=new homepage(username);
+              //  s.setUser(username);
                 s.setVisible(true);
              }
             else{
@@ -85,7 +85,6 @@ public class DatabaseHandler {
          String[] data = new String[10] ;
          PreparedStatement ps;
          ResultSet rs;
-         currentUser="nishant";
          String query="SELECT * FROM user_books WHERE`uname`='"+currentUser+"'";
         
          try{
@@ -98,8 +97,38 @@ public class DatabaseHandler {
                 
                 String book=rs.getString(1);
                 String author=rs.getString(2);
-                data[i]=book+"  "+author;
+                data[i]=book+"  \t"+author;
                 System.out.println(data[i]);
+                i++;
+            }
+             
+         }catch(SQLException e){
+             System.out.println("error in getBookHistory");
+         }
+        return data;
+    }
+
+    String[][] searchBooks(String bookname) {
+         String[][] data = new String[10][3] ;
+         PreparedStatement ps;
+         ResultSet rs;
+         String query="SELECT * FROM user_books WHERE`bk_name`='"+bookname+"'";
+        
+         try{
+            ps=Myconnection.getConnection().prepareStatement(query);
+           // ps.setString(1,currentUser);
+            
+            rs=ps.executeQuery(query);
+            int i=0;
+            while(rs.next()){
+                
+                String book=rs.getString(1);
+                String author=rs.getString(2);
+                String user=rs.getString(3);
+                data[i][0]=book;
+                data[i][1]=author;
+                data[i][2]=user;
+                System.out.println(data[i][2]);
                 i++;
             }
              

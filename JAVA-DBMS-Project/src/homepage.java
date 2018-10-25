@@ -1,8 +1,10 @@
 
+import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,6 +20,8 @@ public class homepage extends javax.swing.JFrame {
 
     DatabaseHandler handler;
     String currentUser="demouser";
+    DefaultListModel listModel;  
+    DefaultTableModel tableModel;
     /**
      * Creates new form homepage
      */
@@ -31,10 +35,23 @@ public class homepage extends javax.swing.JFrame {
     }
      public homepage(String a) {
         initComponents();
-        jLabel7.setText(a);
+       // jLabel7.setText(a);
+        currentUser=a;
+        setUpList();
+        tableModel=(DefaultTableModel) table.getModel();
+        getDatabtn.setVisible(false);
         
     }
 
+     void setUpList(){
+         listModel=new DefaultListModel();
+        handler= new DatabaseHandler();
+        String[] data=handler.getBookHistory(currentUser);
+        for(int i=0;i<data.length;i++){
+            listModel.addElement(data[i]);
+        }
+        list.setModel(listModel);
+     }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,8 +68,9 @@ public class homepage extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         searchTab = new javax.swing.JTabbedPane();
         yourBooksPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        searchPanel = new javax.swing.JPanel();
+        getDatabtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        list = new javax.swing.JList<>();
         addBookPanel = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -63,9 +81,15 @@ public class homepage extends javax.swing.JFrame {
         newBook = new javax.swing.JTextField();
         newAuthor = new javax.swing.JTextField();
         addBookbtn = new javax.swing.JButton();
+        searchPanel = new javax.swing.JPanel();
+        searchBox = new javax.swing.JTextField();
+        searchbtn = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(820, 450));
+        setMinimumSize(new java.awt.Dimension(700, 450));
+        setSize(new java.awt.Dimension(700, 450));
         getContentPane().setLayout(null);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -94,16 +118,21 @@ public class homepage extends javax.swing.JFrame {
         jLabel2.setText("YOUR BOOKS");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-760, 198, -1, 30));
 
-        jButton1.setText("get data");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        yourBooksPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        getDatabtn.setText("get data");
+        getDatabtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                getDatabtnActionPerformed(evt);
             }
         });
-        yourBooksPanel.add(jButton1);
+        yourBooksPanel.add(getDatabtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(376, 58, -1, -1));
+
+        jScrollPane1.setViewportView(list);
+
+        yourBooksPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 290, 180));
 
         searchTab.addTab("your books", yourBooksPanel);
-        searchTab.addTab("search books", searchPanel);
 
         addBookPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -210,10 +239,45 @@ public class homepage extends javax.swing.JFrame {
 
         searchTab.addTab("add new books", addBookPanel);
 
+        searchPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        searchBox.setText("enter book name");
+        searchPanel.add(searchBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 30, 300, 30));
+
+        searchbtn.setText("search");
+        searchbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchbtnActionPerformed(evt);
+            }
+        });
+        searchPanel.add(searchbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 30, 90, 30));
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "book", "author", "user"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(table);
+
+        searchPanel.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, 520, 270));
+
+        searchTab.addTab("search books", searchPanel);
+
         jPanel1.add(searchTab, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 870, 400));
 
         getContentPane().add(jPanel1);
-        jPanel1.setBounds(10, 0, 810, 460);
+        jPanel1.setBounds(10, 0, 580, 390);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -243,14 +307,39 @@ public class homepage extends javax.swing.JFrame {
 
         handler=new DatabaseHandler();
         handler.addBook(bkname,bkauth,currentUser);
-        this.dispose();
+        setUpList();
+       // this.dispose();
     }//GEN-LAST:event_addBookbtnActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void getDatabtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getDatabtnActionPerformed
          handler= new DatabaseHandler();
-        String[] data=handler.getBookHistory("nishant");
+        String[] data=handler.getBookHistory(currentUser);
+        
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_getDatabtnActionPerformed
+
+    private void searchbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchbtnActionPerformed
+       handler= new DatabaseHandler();
+       String bookname=searchBox.getText().toString();
+      
+       
+       try{
+       String[][] data = handler.searchBooks(bookname);
+       
+       for(int i=0;i<10;i++){
+       
+        tableModel.insertRow(table.getRowCount(),new Object[]{
+                data[i][0],
+                data[i][1],
+                data[i][2]
+         });
+       }
+       
+       }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(null,"there is no book with this name");
+       }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchbtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -291,7 +380,7 @@ public class homepage extends javax.swing.JFrame {
     private javax.swing.JPanel addBookPanel;
     private javax.swing.JButton addBookbtn;
     private javax.swing.JLabel btnback;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton getDatabtn;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -302,10 +391,16 @@ public class homepage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JList<String> list;
     private javax.swing.JTextField newAuthor;
     private javax.swing.JTextField newBook;
+    private javax.swing.JTextField searchBox;
     private javax.swing.JPanel searchPanel;
     private javax.swing.JTabbedPane searchTab;
+    private javax.swing.JButton searchbtn;
+    private javax.swing.JTable table;
     private javax.swing.JPanel yourBooksPanel;
     // End of variables declaration//GEN-END:variables
 

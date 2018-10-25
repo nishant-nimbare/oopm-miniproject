@@ -133,14 +133,16 @@ public class web_page extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-     sign_up s=new sign_up();
-     s.setVisible(true);
+      sign_up s=new sign_up();
+      s.setVisible(true);
+      this.dispose();
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-login_form s=new login_form();
-s.setVisible(true);// TODO add your handling code here:
+        login_form s=new login_form();
+        s.setVisible(true);// TODO add your handling code here:
+         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
