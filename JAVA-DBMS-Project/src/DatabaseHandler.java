@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  */
 public class DatabaseHandler {
     
-     void addBook(String book,String author,String username){
+     void addBook(String book,String author,String username,String email){
          if(book.equals(""))
         {
             JOptionPane.showMessageDialog(null, "Add a Book");
@@ -32,13 +32,14 @@ public class DatabaseHandler {
         
         else{
             PreparedStatement ps;
-            String query="INSERT INTO `user_books`(`bk_name`, `bk_auth`, `uname`) VALUES (?,?,?)";
+            String query="INSERT INTO `user_books`(`bk_name`, `bk_auth`, `uname`, `email`) VALUES (?,?,?,?)";
             try {
                 ps= Myconnection.getConnection().prepareStatement(query);
 
                 ps.setString(1,book);
                 ps.setString(2,author);
                 ps.setString(3,username);
+                ps.setString(4, email);
            
 
                 if(ps.executeUpdate()>0)
@@ -81,8 +82,8 @@ public class DatabaseHandler {
         
     }
 
-    String[] getBookHistory(String currentUser) {
-         String[] data = new String[10] ;
+    String[][] getBookHistory(String currentUser) {
+         String[][] data = new String[10][2] ;
          PreparedStatement ps;
          ResultSet rs;
          String query="SELECT * FROM user_books WHERE`uname`='"+currentUser+"'";
@@ -97,8 +98,9 @@ public class DatabaseHandler {
                 
                 String book=rs.getString(1);
                 String author=rs.getString(2);
-                data[i]=book+"  \t"+author;
-                System.out.println(data[i]);
+                data[i][0]=book;
+                data[i][1]=author;
+                System.out.println(data[i][0]);
                 i++;
             }
              
@@ -109,7 +111,7 @@ public class DatabaseHandler {
     }
 
     String[][] searchBooks(String bookname) {
-         String[][] data = new String[10][3] ;
+         String[][] data = new String[10][4] ;
          PreparedStatement ps;
          ResultSet rs;
          String query="SELECT * FROM user_books WHERE`bk_name`='"+bookname+"'";
@@ -125,9 +127,11 @@ public class DatabaseHandler {
                 String book=rs.getString(1);
                 String author=rs.getString(2);
                 String user=rs.getString(3);
+                String email=rs.getString(4);
                 data[i][0]=book;
                 data[i][1]=author;
                 data[i][2]=user;
+                data[i][3]=email;
                 System.out.println(data[i][2]);
                 i++;
             }
@@ -137,5 +141,60 @@ public class DatabaseHandler {
          }
         return data;
     }
+
+    String getUserEmail(String user) {
+       String email=null;
+       
+       PreparedStatement ps;
+       ResultSet rs;
+       String query="SELECT `email` FROM users WHERE`username`='"+user+"'";
+       
+         try{
+            ps=Myconnection.getConnection().prepareStatement(query);
+           // ps.setString(1,currentUser);
+            
+            rs=ps.executeQuery(query);
+            int i=0;
+            if(rs.next()){
+                
+                email=rs.getString(1);
+               
+                System.out.println(email);
+              
+            }
+             
+         }catch(SQLException e){
+             System.out.println("error in getBookHistory");
+         }
+       
+       return email;
+    }
+
+    void deleteBook(String bookName, String user) {
+        
+        System.out.println("inside delete book= "+bookName+" user= "+user);
+        PreparedStatement ps;
+       ResultSet rs;
+       String query="DELETE FROM `user_books` WHERE `bk_name`='"+bookName+"' AND `uname`='"+user+"'";
+       //DELETE FROM `user_books` WHERE `bk_name`="lotr" AND `uname`="nimit"
+      // String query="DELETE FROM `user_books` WHERE `bk_name`='lotr'";
+       try{
+            ps=Myconnection.getConnection().prepareStatement(query);
+            ps.executeUpdate();
+            
+            if(ps.executeUpdate()>0){
+                JOptionPane.showMessageDialog(null,"Book deleted");
+            }
+           
+           
+       }catch(SQLException e){
+             System.out.println("error in deleteBook");
+       }
+    }
+
+
+    
+    
+    
     
 }

@@ -23,10 +23,12 @@ public class add_book extends javax.swing.JFrame {
      */
     public add_book() {
         initComponents();
+            this.setLocationRelativeTo(null);
     }
     public add_book(String a) {
         initComponents();
         jTextField_uname.setText(a);
+            this.setLocationRelativeTo(null);
         
     }
 
@@ -205,7 +207,7 @@ public class add_book extends javax.swing.JFrame {
         String uname=jTextField_uname.getText();
         
         handler=new DatabaseHandler();
-        handler.addBook(bkname,bkauth,uname);
+        handler.addBook(bkname,bkauth,uname,"nishant");
         this.dispose();
 //        if(bkname.equals(""))
 //        {

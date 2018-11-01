@@ -1,9 +1,6 @@
 
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -22,36 +19,65 @@ public class homepage extends javax.swing.JFrame {
     String currentUser="demouser";
     DefaultListModel listModel;  
     DefaultTableModel tableModel;
+    DefaultTableModel historyModel;
+    String email;
+    String[] listData;
     /**
      * Creates new form homepage
      */
     public homepage() {
         initComponents();
         
+        this.setLocationRelativeTo(null);
        // String[] data=handler.getBookHistory(currentUser);
       //  JList list=new JList(data);
        // yourBooksPanel.add(list);
+        tableModel=(DefaultTableModel) searchTable.getModel();
+        historyModel=(DefaultTableModel) historyTable.getModel();
         
     }
      public homepage(String a) {
         initComponents();
+        this.setLocationRelativeTo(null);
        // jLabel7.setText(a);
         currentUser=a;
-        setUpList();
-        tableModel=(DefaultTableModel) table.getModel();
-        getDatabtn.setVisible(false);
         
+        tableModel=(DefaultTableModel) searchTable.getModel();
+        historyModel=(DefaultTableModel) historyTable.getModel();
+        //getDatabtn.setVisible(false);
+        setUpList();
     }
 
      void setUpList(){
+         
          listModel=new DefaultListModel();
         handler= new DatabaseHandler();
-        String[] data=handler.getBookHistory(currentUser);
-        for(int i=0;i<data.length;i++){
-            listModel.addElement(data[i]);
-        }
-        list.setModel(listModel);
+        email=handler.getUserEmail(currentUser);
+       // listData=handler.getBookHistory(currentUser);
+      //  for(int i=0;i<listData.length;i++){
+        //    listModel.addElement(Integer.toString(i+1)+") "+listData[i]);
+       // }
+         try{
+       String[][] data = handler.getBookHistory(currentUser);
+       
+       historyModel.setRowCount(0);
+       for(int i=0;i<10;i++){
+       
+        historyModel.insertRow(historyTable.getRowCount(),new Object[]{
+                data[i][0],
+                data[i][1]
+         });
+       }
+       
+       }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(null,"there is no book with this name");
+       }
+       
+        historyTable.setModel(historyModel);
+        System.out.println(email);
      }
+     
+     
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -68,29 +94,32 @@ public class homepage extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         searchTab = new javax.swing.JTabbedPane();
         yourBooksPanel = new javax.swing.JPanel();
-        getDatabtn = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        list = new javax.swing.JList<>();
+        jLabel9 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        historyTable = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
         addBookPanel = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        btnback = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         newBook = new javax.swing.JTextField();
         newAuthor = new javax.swing.JTextField();
         addBookbtn = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
         searchPanel = new javax.swing.JPanel();
         searchBox = new javax.swing.JTextField();
         searchbtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        table = new javax.swing.JTable();
+        searchTable = new javax.swing.JTable();
+        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(700, 450));
-        setSize(new java.awt.Dimension(700, 450));
-        getContentPane().setLayout(null);
+        setMinimumSize(new java.awt.Dimension(590, 381));
+        setSize(new java.awt.Dimension(590, 381));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setMinimumSize(new java.awt.Dimension(810, 480));
@@ -118,77 +147,108 @@ public class homepage extends javax.swing.JFrame {
         jLabel2.setText("YOUR BOOKS");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-760, 198, -1, 30));
 
-        yourBooksPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        yourBooksPanel.setLayout(null);
 
-        getDatabtn.setText("get data");
-        getDatabtn.addActionListener(new java.awt.event.ActionListener() {
+        jLabel9.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel9.setText("YOUR BOOKS");
+        yourBooksPanel.add(jLabel9);
+        jLabel9.setBounds(60, 20, 100, 20);
+
+        jButton1.setText("delete");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getDatabtnActionPerformed(evt);
+                jButton1ActionPerformed(evt);
             }
         });
-        yourBooksPanel.add(getDatabtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(376, 58, -1, -1));
+        yourBooksPanel.add(jButton1);
+        jButton1.setBounds(500, 290, 63, 23);
 
-        jScrollPane1.setViewportView(list);
+        historyTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        yourBooksPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 290, 180));
+            },
+            new String [] {
+                "book name", "author"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(historyTable);
+
+        yourBooksPanel.add(jScrollPane3);
+        jScrollPane3.setBounds(10, 50, 240, 250);
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pexels-photo-261909.jpeg"))); // NOI18N
+        jLabel4.setText("jLabel4");
+        yourBooksPanel.add(jLabel4);
+        jLabel4.setBounds(0, -50, 660, 430);
 
         searchTab.addTab("your books", yourBooksPanel);
 
-        addBookPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        addBookPanel.setLayout(null);
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel5.setLayout(null);
 
-        jPanel6.setBackground(new java.awt.Color(51, 102, 255));
+        jPanel6.setBackground(java.awt.Color.white);
+        jPanel6.setOpaque(false);
 
-        jLabel8.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Leelawadee UI", 1, 36)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(12, 36, 97));
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("Add Book");
-
-        btnback.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        btnback.setText("BACK");
-        btnback.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnbackMouseClicked(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnback, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(114, 114, 114)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(357, Short.MAX_VALUE))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(46, 46, 46)
+                .addComponent(jLabel8)
+                .addContainerGap(497, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnback, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
         );
 
+        jPanel5.add(jPanel6);
+        jPanel6.setBounds(0, 0, 709, 64);
+
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Book Author");
+        jPanel5.add(jLabel1);
+        jLabel1.setBounds(46, 118, 121, 30);
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Book Name");
+        jPanel5.add(jLabel3);
+        jLabel3.setBounds(46, 70, 121, 30);
 
         newBook.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newBookActionPerformed(evt);
             }
         });
+        jPanel5.add(newBook);
+        newBook.setBounds(185, 80, 227, 30);
 
         newAuthor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newAuthorActionPerformed(evt);
             }
         });
+        jPanel5.add(newAuthor);
+        newAuthor.setBounds(185, 125, 227, 30);
 
         addBookbtn.setText("OK");
         addBookbtn.addActionListener(new java.awt.event.ActionListener() {
@@ -196,52 +256,27 @@ public class homepage extends javax.swing.JFrame {
                 addBookbtnActionPerformed(evt);
             }
         });
+        jPanel5.add(addBookbtn);
+        addBookbtn.setBounds(240, 190, 47, 23);
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(addBookbtn)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(newBook, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(newAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addGap(0, 71, Short.MAX_VALUE)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(newBook, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(newAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(40, 40, 40)
-                .addComponent(addBookbtn)
-                .addGap(131, 131, 131))
-        );
+        jLabel5.setIcon(new javax.swing.ImageIcon("C:\\nishant\\oopm miniproject\\DBMS\\DBMS\\images\\pexels-photo-762686.jpeg")); // NOI18N
+        jPanel5.add(jLabel5);
+        jLabel5.setBounds(0, -10, 600, 380);
 
-        addBookPanel.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 5, 780, 360));
+        addBookPanel.add(jPanel5);
+        jPanel5.setBounds(-3, 5, 570, 360);
 
         searchTab.addTab("add new books", addBookPanel);
 
+        searchPanel.setBackground(new java.awt.Color(255, 255, 0));
         searchPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         searchBox.setText("enter book name");
+        searchBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchBoxActionPerformed(evt);
+            }
+        });
         searchPanel.add(searchBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 30, 300, 30));
 
         searchbtn.setText("search");
@@ -252,32 +287,36 @@ public class homepage extends javax.swing.JFrame {
         });
         searchPanel.add(searchbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 30, 90, 30));
 
-        table.setModel(new javax.swing.table.DefaultTableModel(
+        searchTable.setBackground(new java.awt.Color(0, 0, 153));
+        searchTable.setForeground(new java.awt.Color(51, 255, 102));
+        searchTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "book", "author", "user"
+                "book", "author", "user", "user-email"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(table);
+        jScrollPane2.setViewportView(searchTable);
 
-        searchPanel.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, 520, 270));
+        searchPanel.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 90, 520, 200));
+
+        jLabel10.setIcon(new javax.swing.ImageIcon("C:\\nishant\\oopm miniproject\\DBMS\\DBMS\\images\\pexels-photo-46274.jpg")); // NOI18N
+        searchPanel.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 660, 350));
 
         searchTab.addTab("search books", searchPanel);
 
-        jPanel1.add(searchTab, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 870, 400));
+        jPanel1.add(searchTab, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 660, 380));
 
-        getContentPane().add(jPanel1);
-        jPanel1.setBounds(10, 0, 580, 390);
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 590, 390));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -286,12 +325,6 @@ public class homepage extends javax.swing.JFrame {
         web_page s=new web_page();
         s.setVisible(true);// TODO add your handling code here:
     }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void btnbackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnbackMouseClicked
-        this.dispose();
-        homepage s=new homepage();
-        s.setVisible(true);// TODO add your handling code here:
-    }//GEN-LAST:event_btnbackMouseClicked
 
     private void newBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newBookActionPerformed
         // TODO add your handling code here:
@@ -306,32 +339,27 @@ public class homepage extends javax.swing.JFrame {
         String bkauth=newAuthor.getText();
 
         handler=new DatabaseHandler();
-        handler.addBook(bkname,bkauth,currentUser);
+        handler.addBook(bkname,bkauth,currentUser,email);
         setUpList();
        // this.dispose();
     }//GEN-LAST:event_addBookbtnActionPerformed
 
-    private void getDatabtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getDatabtnActionPerformed
-         handler= new DatabaseHandler();
-        String[] data=handler.getBookHistory(currentUser);
-        
-        // TODO add your handling code here:
-    }//GEN-LAST:event_getDatabtnActionPerformed
-
     private void searchbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchbtnActionPerformed
        handler= new DatabaseHandler();
        String bookname=searchBox.getText().toString();
-      
+       
+       tableModel.setRowCount(0);
        
        try{
        String[][] data = handler.searchBooks(bookname);
        
        for(int i=0;i<10;i++){
        
-        tableModel.insertRow(table.getRowCount(),new Object[]{
+        tableModel.insertRow(searchTable.getRowCount(),new Object[]{
                 data[i][0],
                 data[i][1],
-                data[i][2]
+                data[i][2],
+                data[i][3]
          });
        }
        
@@ -340,6 +368,24 @@ public class homepage extends javax.swing.JFrame {
        }
         // TODO add your handling code here:
     }//GEN-LAST:event_searchbtnActionPerformed
+
+    private void searchBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchBoxActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        int row=historyTable.getSelectedRow();
+        
+        String book=historyTable.getValueAt(row,0).toString();
+        handler= new DatabaseHandler();
+   
+        System.out.println("book to be deleted"+book);
+        handler.deleteBook(book,currentUser);
+        historyModel.setRowCount(0);
+        setUpList();
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -379,28 +425,31 @@ public class homepage extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel addBookPanel;
     private javax.swing.JButton addBookbtn;
-    private javax.swing.JLabel btnback;
-    private javax.swing.JButton getDatabtn;
+    private javax.swing.JTable historyTable;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JList<String> list;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField newAuthor;
     private javax.swing.JTextField newBook;
     private javax.swing.JTextField searchBox;
     private javax.swing.JPanel searchPanel;
     private javax.swing.JTabbedPane searchTab;
+    private javax.swing.JTable searchTable;
     private javax.swing.JButton searchbtn;
-    private javax.swing.JTable table;
     private javax.swing.JPanel yourBooksPanel;
     // End of variables declaration//GEN-END:variables
 
